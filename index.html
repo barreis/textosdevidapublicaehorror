@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#24103f">
+<title>Missão Podcast — Escape Room de Língua Portuguesa</title>
+<style>
+:root {
+  --bg: #10091d;
+  --panel: #1e1430;
+  --panel2: #2a1a42;
+  --purple: #9b5de5;
+  --purple-light: #c77dff;
+  --cyan: #4cc9f0;
+  --yellow: #ffd166;
+  --green: #70e000;
+  --red: #ff5d73;
+  --text: #f7f2ff;
+  --muted: #c5b9d8;
+  --border: #493360;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #382052 0, var(--bg) 48%);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+button, input, textarea, select { font: inherit; }
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 17px;
+  color: white;
+  background: var(--purple);
+  font-weight: 800;
+  transition: transform .15s, filter .15s;
+}
+button:hover { filter: brightness(1.12); transform: translateY(-1px); }
+button:disabled { cursor: not-allowed; opacity: .45; transform: none; }
+button.secondary { background: #403052; border: 1px solid var(--border); }
+button.cyan { background: #087f9e; }
+button.yellow { background: #9a6a00; }
+button.danger { background: #9c3047; }
+button.success { background: #286a3a; }
+button.small { padding: 7px 11px; font-size: .9rem; }
+a { color: var(--cyan); }
+.wrap { width: min(1100px, 94%); margin: auto; padding: 20px 0 50px; }
+header { text-align: center; padding: 24px 10px 12px; }
+.logo {
+  display: inline-grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 23px;
+  background: linear-gradient(135deg, var(--purple), #512b8b);
+  box-shadow: 0 0 40px #9b5de555;
+  font-size: 2.3rem;
+}
+h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 13px 0 3px; line-height: 1.1; }
+h2 { font-size: clamp(1.35rem, 3vw, 2rem); margin-top: 0; }
+h3 { margin: 0 0 10px; }
+.subtitle { color: var(--muted); max-width: 740px; margin: 8px auto 0; }
+.panel {
+  background: linear-gradient(145deg, #241834, #191126);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: clamp(16px, 3vw, 28px);
+  margin: 16px 0;
+  box-shadow: 0 12px 32px #00000024;
+}
+.hidden { display: none !important; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.field { display: flex; flex-direction: column; gap: 6px; }
+label { font-weight: 700; color: #e7d9ff; }
+input, textarea, select {
+  width: 100%;
+  color: var(--text);
+  background: #100a19;
+  border: 1px solid #59426f;
+  border-radius: 10px;
+  padding: 11px 12px;
+  outline: none;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px #4cc9f022; }
+textarea { min-height: 90px; resize: vertical; }
+small, .muted { color: var(--muted); }
+.notice {
+  border-left: 4px solid var(--yellow);
+  background: #ffd16612;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #ffedbd;
+}
+.motivation {
+  border: 1px solid #7b55a0;
+  background: linear-gradient(100deg, #6a329c22, #4cc9f014);
+  padding: 17px;
+  border-radius: 14px;
+  font-size: 1.03rem;
+}
+.motivation strong { color: var(--purple-light); }
+.actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.stat {
+  background: #130c20;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  text-align: center;
+  padding: 12px 8px;
+}
+.stat span { display: block; color: var(--muted); font-size: .82rem; }
+.stat strong { display: block; font-size: 1.4rem; }
+#timer { color: var(--yellow); font-variant-numeric: tabular-nums; }
+#timer.urgent { color: var(--red); animation: pulse 1s infinite alternate; }
+@keyframes pulse { to { opacity: .55; } }
+.progress-track { background: #100a19; height: 11px; border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--purple), var(--cyan)); transition: width .3s; }
+.stage-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.stage-number { color: var(--cyan); font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: .82rem; }
+.challenge-title { margin: 8px 0; }
+.challenge-text { color: #e8dff4; font-size: 1.04rem; }
+.context {
+  border: 1px solid #58416e;
+  background: #130c20;
+  border-radius: 13px;
+  padding: 15px;
+  margin: 15px 0;
+  white-space: pre-wrap;
+}
+.options { display: grid; gap: 9px; margin: 15px 0; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  background: #160e24;
+  border: 1px solid #4c365f;
+  border-radius: 11px;
+  cursor: pointer;
+}
+.option:hover { border-color: var(--purple-light); }
+.option input { width: auto; margin-top: 5px; accent-color: var(--purple); }
+.feedback { margin-top: 14px; border-radius: 12px; padding: 12px 14px; }
+.feedback.good { background: #70e00016; border: 1px solid #70e00088; }
+.feedback.bad { background: #ff5d7314; border: 1px solid #ff5d7388; }
+.feedback.info { background: #4cc9f014; border: 1px solid #4cc9f077; }
+.pair-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; margin: 9px 0; }
+.order-list { display: grid; gap: 9px; }
+.order-item {
+  display: flex; gap: 10px; align-items: center;
+  padding: 12px; border-radius: 11px;
+  background: #160e24; border: 1px solid var(--border);
+}
+.order-item .order-text { flex: 1; }
+.order-item button { padding: 5px 10px; }
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.match-column { display: grid; gap: 8px; align-content: start; }
+.match-choice {
+  width: 100%; text-align: left; background: #160e24;
+  border: 1px solid var(--border); color: var(--text);
+}
+.match-choice.selected { border: 2px solid var(--cyan); background: #4cc9f018; }
+.match-choice.matched { border-color: var(--green); opacity: .75; }
+.script-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.script-field { display: flex; flex-direction: column; gap: 6px; }
+.script-field.full { grid-column: 1 / -1; }
+.script-field textarea { min-height: 82px; }
+.checklist { display: grid; gap: 8px; }
+.checkline { display: flex; gap: 9px; align-items: flex-start; background: #160e24; padding: 10px; border-radius: 10px; }
+.checkline input { width: auto; margin-top: 5px; }
+.tag { display: inline-block; padding: 4px 9px; border-radius: 999px; background: #4cc9f01a; color: var(--cyan); font-size: .8rem; font-weight: 800; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 22px 0; }
+footer { color: var(--muted); text-align: center; padding: 22px 8px; font-size: .9rem; }
+#toast { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); max-width: 92%; padding: 12px 18px; background: #241834; border: 1px solid var(--purple); border-radius: 12px; box-shadow: 0 8px 25px #0008; z-index: 20; }
+@media(max-width:700px) {
+  .grid, .grid.three, .script-grid { grid-template-columns: 1fr; }
+  .script-field.full { grid-column: auto; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pair-row, .match-grid { grid-template-columns: 1fr; }
+  .wrap { width: 95%; padding-top: 10px; }
+  header { padding-top: 16px; }
+}
+@media print {
+  body { background: white !important; color: #111 !important; }
+  .panel { background: white !important; color: #111 !important; border: 1px solid #aaa; box-shadow: none; }
+  .no-print, header, #gameScreen, #welcomeScreen, #toast, footer { display: none !important; }
+  #finishScreen { display: block !important; }
+  input, textarea { color: #111 !important; background: white !important; border: 1px solid #aaa !important; }
+  .muted, small, label { color: #333 !important; }
+  .script-field textarea { min-height: 55px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo" aria-hidden="true">🎙️</div>
+  <h1>MISSÃO PODCAST</h1>
+  <p class="subtitle">Escape room de Língua Portuguesa: textos da vida pública, narrativas de horror, leitura crítica e produção de roteiro para podcast.</p>
+</header>
+
+<main>
+<section id="welcomeScreen" class="panel">
+  <div class="motivation">
+    <strong>Mensagem da professora Bárbara — Comunicação e Língua Portuguesa</strong>
+    <p>“Uma boa comunicação começa quando a gente aprende a observar, questionar e organizar as ideias. Hoje, cada pista importa: trabalhem em equipe, escutem uns aos outros e transformem conhecimento em uma produção que tenha propósito. Vocês são capazes de ir além da primeira resposta!”</p>
+  </div>
+  <h2>🔐 Sua missão</h2>
+  <p>Vocês fazem parte de uma equipe de produção que precisa recuperar um estúdio de podcast bloqueado. Para liberar o estúdio, será necessário resolver <strong>30 desafios</strong>, interpretar textos, decifrar enigmas, organizar sequências e relacionar conceitos. Ao final, a equipe deverá montar um roteiro completo de podcast.</p>
+  <div class="grid">
+    <div class="field">
+      <label for="teamName">Nome da equipe</label>
+      <input id="teamName" maxlength="80" placeholder="Ex.: Vozes em Ação">
+    </div>
+    <div class="field">
+      <label for="className">Turma</label>
+      <input id="className" maxlength="80" placeholder="Ex.: 2º ano do Ensino Médio">
+    </div>
+    <div class="field">
+      <label for="members">Integrantes</label>
+      <textarea id="members" placeholder="Digite os nomes dos integrantes"></textarea>
+    </div>
+    <div class="field">
+      <label for="difficulty">Modo de jogo</label>
+      <select id="difficulty">
+        <option value="standard">Missão padrão — dicas com penalidade</option>
+        <option value="challenge">Desafio avançado — sem dicas gratuitas</option>
+      </select>
+      <small>As respostas incorretas podem ser tentadas novamente, mas geram penalidade na pontuação.</small>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong>30</strong><span>Desafios</span></div>
+    <div class="stat"><strong>45:00</strong><span>Tempo da missão</span></div>
+    <div class="stat"><strong>10 pts</strong><span>Resposta correta</span></div>
+    <div class="stat"><strong>Roteiro</strong><span>Produto final</span></div>
+  </div>
+  <div class="notice"><strong>Regras:</strong> leiam tudo com atenção, discutam antes de responder e registrem as decisões. Cada desafio concluído libera o próximo. O cronômetro alerta quando o tempo termina; a equipe poderá concluir o roteiro e registrar o resultado mesmo após os 45 minutos.</div>
+  <div class="actions">
+    <button id="startBtn">🚀 Iniciar missão</button>
+    <button id="resumeBtn" class="secondary hidden">Continuar missão salva</button>
+    <button id="clearBtn" class="danger">Limpar dados salvos</button>
+  </div>
+  <p id="savedStatus" class="muted" aria-live="polite"></p>
+</section>
+
+<section id="gameScreen" class="hidden">
+  <div class="panel">
+    <div class="stage-head">
+      <div>
+        <div class="stage-number">Central de operações</div>
+        <h2 id="teamHeading">Equipe</h2>
+        <span class="tag" id="currentTopic">Leitura e comunicação</span>
+      </div>
+      <button class="secondary small no-print" id="saveBtn">💾 Salvar progresso</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="timer">45:00</strong><span>Tempo restante</span></div>
+      <div class="stat"><strong id="score">0</strong><span>Pontuação</span></div>
+      <div class="stat"><strong id="progressText">0/30</strong><span>Desafios concluídos</span></div>
+      <div class="stat"><strong id="mistakes">0</strong><span>Tentativas incorretas</span></div>
+    </div>
+    <div class="progress-track" aria-label="Progresso da missão"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="panel" id="challengePanel">
+    <div class="stage-head">
+      <div>
+        <div class="stage-number" id="stageNumber">Desafio 1 de 30</div>
+        <h2 class="challenge-title" id="challengeTitle"></h2>
+      </div>
+      <span class="tag" id="challengeType">Múltipla escolha</span>
+    </div>
+    <p class="challenge-text" id="challengePrompt"></p>
+    <div id="challengeContext" class="context hidden"></div>
+    <div id="interactionArea"></div>
+    <div id="feedback" class="hidden" aria-live="polite"></div>
+    <div class="actions no-print">
+      <button id="checkBtn">Conferir resposta</button>
+      <button id="hintBtn" class="secondary">💡 Pedir pista</button>
+      <button id="nextBtn" class="cyan hidden">Próximo desafio →</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>📒 Diário da equipe</h3>
+    <p class="muted">Registrem uma ideia importante, uma dúvida ou uma decisão que possa ajudar na produção do podcast.</p>
+    <textarea id="teamNotes" placeholder="Anotações da equipe..." rows="3"></textarea>
+  </div>
+</section>
+
+<section id="finishScreen" class="hidden">
+  <div class="panel">
+    <div class="motivation">
+      <strong>🏆 Parabéns, equipe!</strong>
+      <p>Vocês chegaram à etapa final da Missão Podcast. Agora, transformem os conhecimentos conquistados em um roteiro claro, criativo, responsável e pronto para gravação.</p>
+    </div>
+    <h2>📊 Relatório da missão</h2>
+    <div class="stats">
+      <div class="stat"><strong id="finalScore">0</strong><span>Pontuação final</span></div>
+      <div class="stat"><strong id="finalCompleted">0/30</strong><span>Desafios concluídos</span></div>
+      <div class="stat"><strong id="finalMistakes">0</strong><span>Tentativas incorretas</span></div>
+      <div class="stat"><strong id="finalTime">00:00</strong><span>Tempo utilizado</span></div>
+    </div>
+    <p id="finalMessage"></p>
+  </div>
+
+  <div class="panel">
+    <h2>🎧 Construção do roteiro de podcast</h2>
+    <p>Preencham os campos em equipe. O roteiro precisa ter começo, desenvolvimento e encerramento. Usem as respostas dos desafios como base, mas escrevam com as próprias palavras.</p>
+    <div class="script-grid">
+      <div class="script-field">
+        <label for="podTitle">1. Título do podcast</label>
+        <input id="podTitle" placeholder="Um título interessante e claro">
+      </div>
+      <div class="script-field">
+        <label for="podEpisode">2. Nome do episódio</label>
+        <input id="podEpisode" placeholder="Título deste episódio">
+      </div>
+      <div class="script-field">
+        <label for="podTheme">3. Tema central</label>
+        <input id="podTheme" placeholder="Qual será o assunto principal?">
+      </div>
+      <div class="script-field">
+        <label for="podAudience">4. Público-alvo</label>
+        <input id="podAudience" placeholder="Para quem vocês vão falar?">
+      </div>
+      <div class="script-field full">
+        <label for="podObjective">5. Objetivo comunicativo</label>
+        <textarea id="podObjective" placeholder="Informar, conscientizar, analisar, entreter ou provocar reflexão? Explique o propósito."></textarea>
+      </div>
+      <div class="script-field">
+        <label for="podFormat">6. Formato</label>
+        <select id="podFormat">
+          <option value="">Selecione</option>
+          <option>Entrevista</option>
+          <option>Mesa-redonda</option>
+          <option>Jornalístico</option>
+          <option>Narrativo</option>
+          <option>Debate</option>
+          <option>Investigativo</option>
+          <option>Educativo</option>
+          <option>Híbrido</option>
+        </select>
+      </div>
+      <div class="script-field">
+        <label for="podDuration">7. Duração prevista</label>
+        <select id="podDuration">
+          <option value="">Selecione</option>
+          <option>3 a 5 minutos</option>
+          <option>5 a 8 minutos</option>
+          <option>8 a 12 minutos</option>
+          <option>12 a 15 minutos</option>
+        </select>
+      </div>
+      <div class="script-field full">
+        <label for="podOpening">8. Abertura e vinheta</label>
+        <textarea id="podOpening" placeholder="Escrevam a fala de abertura, a apresentação do programa e a introdução do tema."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podHook">9. Pergunta provocadora ou gancho inicial</label>
+        <textarea id="podHook" placeholder="Que pergunta, cena, informação ou situação despertará a curiosidade do público?"></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podContext">10. Contextualização do tema</label>
+        <textarea id="podContext" placeholder="Apresentem o contexto e expliquem por que o assunto importa."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podBlock1">11. Bloco 1 — ideia principal</label>
+        <textarea id="podBlock1" placeholder="Primeiro argumento, explicação ou parte da narrativa."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podBlock2">12. Bloco 2 — aprofundamento</label>
+        <textarea id="podBlock2" placeholder="Exemplos, dados, evidências, contrapontos ou desenvolvimento do conflito."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podBlock3">13. Bloco 3 — análise ou desfecho</label>
+        <textarea id="podBlock3" placeholder="Consequências, reflexão, solução ou conclusão narrativa."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podSources">14. Fontes e evidências</label>
+        <textarea id="podSources" placeholder="Registrem fontes confiáveis, autores, dados, entrevistas ou textos utilizados. Não inventem citações."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podQuestions">15. Perguntas para entrevista ou debate</label>
+        <textarea id="podQuestions" placeholder="Escrevam pelo menos três perguntas abertas que ajudem a aprofundar o tema."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podRoles">16. Divisão de falas e funções</label>
+        <textarea id="podRoles" placeholder="Quem apresenta? Quem pesquisa? Quem entrevista? Quem controla o áudio? Quem revisa?"></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podSound">17. Trilha, efeitos e sonoplastia</label>
+        <textarea id="podSound" placeholder="Indiquem entradas e saídas de som, pausas e efeitos necessários. Usem áudios autorizados ou livres."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podTransition">18. Transições entre blocos</label>
+        <textarea id="podTransition" placeholder="Escrevam frases que conectem as partes sem deixar a conversa desconexa."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podClosing">19. Encerramento</label>
+        <textarea id="podClosing" placeholder="Retomem a ideia central, deixem uma reflexão e agradeçam a audiência."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podCall">20. Convite à participação</label>
+        <textarea id="podCall" placeholder="Proponham uma pergunta ao público, uma ação responsável ou uma reflexão final."></textarea>
+      </div>
+      <div class="script-field full">
+        <label for="podCredits">21. Créditos e referências finais</label>
+        <textarea id="podCredits" placeholder="Integrantes, entrevistados com autorização, fontes, músicas e efeitos utilizados."></textarea>
+      </div>
+    </div>
+    <hr>
+    <h3>✅ Checklist de qualidade</h3>
+    <div class="checklist" id="scriptChecklist">
+      <label class="checkline"><input type="checkbox" id="ck1"> O roteiro apresenta objetivo e público-alvo definidos.</label>
+      <label class="checkline"><input type="checkbox" id="ck2"> A linguagem é adequada ao público e ao formato escolhido.</label>
+      <label class="checkline"><input type="checkbox" id="ck3"> As informações são verificáveis e as fontes estão registradas.</label>
+      <label class="checkline"><input type="checkbox" id="ck4"> As falas têm sequência lógica e transições claras.</label>
+      <label class="checkline"><input type="checkbox" id="ck5"> Todos os integrantes têm funções e participações previstas.</label>
+      <label class="checkline"><input type="checkbox" id="ck6"> A produção respeita privacidade, consentimento e direitos autorais.</label>
+      <label class="checkline"><input type="checkbox" id="ck7"> O áudio será revisado antes da entrega.</label>
+    </div>
+    <div class="field" style="margin-top:16px">
+      <label for="podReview">Observações para a revisão final</label>
+      <textarea id="podReview" placeholder="O que ainda precisa ser corrigido antes da gravação?"></textarea>
+    </div>
+    <div class="actions no-print">
+      <button id="saveScriptBtn">💾 Salvar roteiro</button>
+      <button id="downloadBtn" class="cyan">⬇️ Baixar roteiro em TXT</button>
+      <button id="pdfBtn" class="secondary">🖨️ Imprimir / salvar em PDF</button>
+      <button id="copyBtn" class="secondary">📋 Copiar roteiro</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📌 Antes de gravar</h2>
+    <ol>
+      <li>Leiam o roteiro em voz alta e ajustem frases difíceis de pronunciar.</li>
+      <li>Confirmem a pronúncia de nomes e a veracidade dos dados.</li>
+      <li>Gravem em ambiente silencioso, mantendo distância constante do microfone.</li>
+      <li>Façam uma gravação de teste e verifiquem o volume.</li>
+      <li>Editem pausas excessivas e ruídos sem prejudicar a compreensão.</li>
+      <li>Confiram os créditos e as autorizações necessárias.</li>
+      <li>Ouçam a versão final antes de entregar.</li>
+    </ol>
+    <p class="muted">O jogo monta e salva o roteiro em texto. A gravação do episódio deverá ser realizada em um aplicativo de áudio adequado.</p>
+    <div class="actions no-print">
+      <button id="restartBtn" class="danger">↻ Reiniciar missão</button>
+      <button id="backToGameBtn" class="secondary">Voltar aos desafios</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>Missão Podcast · Língua Portuguesa e Comunicação · Professora Bárbara</footer>
+</div>
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "missaoPodcastBarbara_v3";
+const TOTAL_TIME = 45 * 60;
+
+const challenges = [
+{
+ type:"mc", topic:"Textos da vida pública", title:"O documento que precisa circular",
+ prompt:"A direção de uma escola precisa comunicar oficialmente uma mudança no horário de atendimento às famílias. Qual escolha é mais adequada?",
+ context:"Situação: a informação precisa ser clara, objetiva, acessível e registrada para consulta posterior.",
+ options:[
+  "Publicar apenas uma frase vaga em uma rede social pessoal.",
+  "Produzir um comunicado institucional com data, horários, destinatários e canal para dúvidas.",
+  "Enviar um áudio informal sem identificar a instituição.",
+  "Esperar que os estudantes transmitam a informação oralmente."
+ ],
+ correct:1,
+ explanation:"Um comunicado institucional identifica o emissor, apresenta informações objetivas e orienta o público sobre o que muda e como agir.",
+ hint:"Pense no gênero textual que permite identificar a instituição, registrar a informação e orientar diferentes leitores."
+},
+{
+ type:"riddle", topic:"Enigma de gêneros textuais", title:"O enigma do emissor",
+ prompt:"Sou um texto da vida pública. Posso convocar, informar ou orientar. Tenho um emissor identificável e minha linguagem depende do público e da finalidade. Quem sou eu?",
+ answers:["comunicado","um comunicado","comunicado institucional","aviso institucional","aviso"],
+ explanation:"Comunicados e avisos são gêneros usados para informar ou orientar públicos específicos. A escolha exata depende da situação.",
+ hint:"Minha resposta costuma aparecer em murais, sites institucionais ou mensagens oficiais."
+},
+{
+ type:"mc", topic:"Leitura crítica", title:"A informação suspeita",
+ prompt:"Uma publicação afirma: “Estudo prova que todos os adolescentes que usam celular têm dependência”. O texto não apresenta autor, instituição, metodologia nem link para a pesquisa. Qual é a atitude mais responsável?",
+ options:[
+  "Compartilhar, porque a palavra “estudo” comprova a afirmação.",
+  "Concluir que a informação é verdadeira se tiver muitas curtidas.",
+  "Verificar a origem, localizar a pesquisa e analisar se os dados sustentam a afirmação.",
+  "Usar a frase como dado científico sem precisar de fonte."
+ ],
+ correct:2,
+ explanation:"A leitura crítica exige conferir autoria, evidências, contexto, método e possíveis generalizações. Popularidade não comprova veracidade.",
+ hint:"Uma afirmação científica precisa de evidências verificáveis, não apenas de uma palavra que pareça confiável."
+},
+{
+ type:"order", topic:"Sequência lógica", title:"Organize o comunicado",
+ prompt:"Coloquem as partes na ordem mais funcional para um comunicado institucional. Usem as setas para reorganizar.",
+ items:[
+  "Informar a mudança e os detalhes necessários.",
+  "Identificar a instituição e o assunto.",
+  "Indicar data, canal de contato e responsável.",
+  "Apresentar a finalidade do comunicado ao público."
+ ],
+ correct:[1,3,0,2],
+ explanation:"Uma sequência clara identifica o emissor e o assunto, situa o objetivo, apresenta a informação principal e termina com dados práticos ou contato.",
+ hint:"O leitor precisa reconhecer primeiro quem comunica e sobre o quê; depois entende o objetivo e os detalhes."
+},
+{
+ type:"mc", topic:"Narrativas de horror", title:"A construção do medo",
+ prompt:"Leia o trecho: “Às 3h17, a torneira começou a pingar. Quando Ana fechou o registro, ouviu o mesmo som atrás da porta trancada.” Qual recurso intensifica o horror?",
+ context:"O medo pode ser construído pela sugestão, pela quebra de expectativa, pelo espaço, pelo som e pela informação incompleta.",
+ options:[
+  "A explicação imediata de todos os acontecimentos.",
+  "A repetição de uma situação cotidiana que se torna inexplicável.",
+  "A descrição de uma paisagem alegre e ensolarada.",
+  "A eliminação completa de qualquer tensão narrativa."
+ ],
+ correct:1,
+ explanation:"O som familiar reaparece em um lugar impossível, rompendo a expectativa e sugerindo uma ameaça sem explicá-la por completo.",
+ hint:"Observe o contraste entre uma ação comum e a ocorrência impossível que aparece em seguida."
+},
+{
+ type:"riddle", topic:"Enigma do horror", title:"A presença que não aparece",
+ prompt:"Não preciso mostrar o monstro. Posso usar silêncio, sombras, ruídos e pistas incompletas para fazer o leitor imaginar o perigo. Que recurso narrativo sou eu?",
+ answers:["suspense","o suspense","suspense narrativo","atmosfera de suspense"],
+ explanation:"O suspense administra informações e expectativas para criar tensão e antecipação.",
+ hint:"Sou aquilo que faz o leitor querer descobrir o que vai acontecer."
+},
+{
+ type:"mc", topic:"Textos da vida pública", title:"Público e linguagem",
+ prompt:"Uma campanha pública pretende orientar adolescentes sobre segurança digital. Qual estratégia comunicativa tende a ser mais adequada?",
+ options:[
+  "Usar termos técnicos sem explicação para demonstrar autoridade.",
+  "Usar linguagem acessível, exemplos concretos e orientações verificáveis.",
+  "Omitir o objetivo para que o público tente adivinhar.",
+  "Utilizar ameaças e informações não confirmadas para chamar atenção."
+ ],
+ correct:1,
+ explanation:"A linguagem deve ser adequada ao público e ao objetivo, sem sacrificar a precisão das informações.",
+ hint:"A melhor comunicação combina clareza, adequação ao público e responsabilidade."
+},
+{
+ type:"pairs", topic:"Relacionando conceitos", title:"Conecte gênero e finalidade",
+ prompt:"Associe cada gênero textual à finalidade que melhor o representa. Selecione um item de cada coluna.",
+ pairs:[
+  ["Ata","Registrar decisões e ocorrências de uma reunião."],
+  ["Convite","Chamar pessoas para participar de um evento."],
+  ["Requerimento","Formalizar uma solicitação."],
+  ["Notícia","Informar sobre um acontecimento de interesse público."]
+ ],
+ explanation:"Gêneros textuais são reconhecidos por sua finalidade, estrutura, contexto de circulação e interlocutores.",
+ hint:"Pense na ação que cada documento costuma realizar em uma situação real."
+},
+{
+ type:"mc", topic:"Podcast como ferramenta de letramento", title:"Muito além de apertar gravar",
+ prompt:"Por que produzir um podcast pode desenvolver práticas de letramento?",
+ options:[
+  "Porque basta falar sem planejar para aprender qualquer conteúdo.",
+  "Porque envolve pesquisa, leitura, seleção de informações, escrita de roteiro, oralidade e revisão.",
+  "Porque elimina a necessidade de avaliar fontes.",
+  "Porque a qualidade depende apenas de ter equipamentos caros."
+ ],
+ correct:1,
+ explanation:"O podcast integra práticas de leitura, escrita, oralidade, pesquisa, edição e circulação social da linguagem.",
+ hint:"Considere todas as etapas que acontecem antes, durante e depois da gravação."
+},
+{
+ type:"riddle", topic:"Enigma de comunicação", title:"A intenção escondida",
+ prompt:"Posso informar, convencer, solicitar ou emocionar. Para me reconhecer, você precisa observar o que o autor pretende alcançar com o texto. Que elemento sou eu?",
+ answers:["intencionalidade","intencionalidade comunicativa","objetivo comunicativo","finalidade comunicativa","finalidade"],
+ explanation:"A intencionalidade comunicativa é a finalidade que orienta a produção e as escolhas de linguagem.",
+ hint:"Não sou o tema do texto; sou aquilo que o autor deseja fazer com ele."
+},
+{
+ type:"mc", topic:"Horror e ponto de vista", title:"Quem conta a história?",
+ prompt:"Uma narrativa começa: “Eu vi a maçaneta girar, embora estivesse sozinho em casa.” Que efeito o uso da primeira pessoa pode produzir?",
+ options:[
+  "Garante que todos os fatos narrados sejam objetivamente verdadeiros.",
+  "Aproxima o leitor da experiência e limita a informação ao que o narrador percebe ou sabe.",
+  "Impede a criação de suspense.",
+  "Transforma automaticamente a narrativa em notícia."
+ ],
+ correct:1,
+ explanation:"A primeira pessoa aproxima o leitor da experiência do narrador, mas pode limitar o conhecimento e permitir dúvida sobre a interpretação dos fatos.",
+ hint:"Pergunte-se o que o leitor consegue saber quando acompanha apenas a experiência de quem narra."
+},
+{
+ type:"order", topic:"Produção de podcast", title:"Monte a espinha dorsal do episódio",
+ prompt:"Organizem as etapas de um episódio informativo em uma sequência coerente.",
+ items:[
+  "Apresentar a conclusão e despedir-se.",
+  "Apresentar o programa e o tema.",
+  "Desenvolver as ideias, evidências e exemplos.",
+  "Criar uma abertura que desperte interesse."
+ ],
+ correct:[3,1,2,0],
+ explanation:"Uma abertura atrativa conduz à apresentação; depois vem o desenvolvimento e, por fim, a síntese e o encerramento.",
+ hint:"A primeira fala desperta curiosidade; a última deixa uma conclusão."
+},
+{
+ type:"mc", topic:"Checagem de informação", title:"O dado sem contexto",
+ prompt:"Uma equipe encontra um gráfico com números altos, mas sem título, fonte ou indicação do período pesquisado. O que deve fazer antes de citá-lo?",
+ options:[
+  "Escolher os números mais impressionantes e usá-los.",
+  "Inventar um título que combine com o episódio.",
+  "Localizar a origem e verificar o que os números medem, quando foram coletados e a quem se referem.",
+  "Citar o gráfico como se tivesse sido produzido pela própria equipe."
+ ],
+ correct:2,
+ explanation:"Sem fonte, período, população e definição das variáveis, os números podem ser interpretados de forma equivocada.",
+ hint:"Um número só ganha sentido quando sabemos o que mede, de quem fala e de onde veio."
+},
+{
+ type:"riddle", topic:"Enigma de fontes", title:"A pista de credibilidade",
+ prompt:"Sou a informação que permite localizar de onde veio uma ideia, um dado ou uma citação. Posso incluir autor, título, instituição, data e endereço eletrônico. O que sou?",
+ answers:["referência","referência bibliográfica","fonte","fonte de informação","referência da fonte","referências"],
+ explanation:"As referências permitem identificar e localizar as fontes consultadas, dando transparência à pesquisa.",
+ hint:"Apareço no final de trabalhos e ajudo o público a encontrar o material original."
+},
+{
+ type:"mc", topic:"Ética e vida pública", title:"Publicar ou preservar?",
+ prompt:"Durante uma entrevista para o podcast, uma pessoa revela uma informação pessoal e pede que ela não seja divulgada. Qual é a postura mais ética?",
+ options:[
+  "Publicar porque qualquer fala gravada pode ser usada sem limite.",
+  "Ignorar o pedido, pois o conteúdo pode aumentar as visualizações.",
+  "Respeitar o combinado, esclarecer os limites de uso e obter consentimento para o que será divulgado.",
+  "Editar a fala para mudar seu sentido sem avisar."
+ ],
+ correct:2,
+ explanation:"Consentimento, privacidade, transparência e respeito aos acordos são fundamentais em entrevistas e produções públicas.",
+ hint:"A audiência não justifica desrespeitar a privacidade nem alterar o sentido de uma fala."
+},
+{
+ type:"mc", topic:"Argumentação", title:"Opinião não é evidência",
+ prompt:"Qual alternativa apresenta a argumentação mais consistente para defender a ampliação da leitura na escola?",
+ options:[
+  "“A leitura é importante porque eu acho e pronto.”",
+  "“Todos que discordam estão errados.”",
+  "“A leitura amplia repertórios; para sustentar essa afirmação, podemos relacionar pesquisas, experiências documentadas e exemplos concretos.”",
+  "“Não precisamos de fontes quando a opinião é forte.”"
+ ],
+ correct:2,
+ explanation:"Um argumento consistente apresenta uma tese e a sustenta com razões, exemplos e evidências adequadas.",
+ hint:"Procure a alternativa que explica a ideia e indica como sustentá-la."
+},
+{
+ type:"pairs", topic:"Recursos de linguagem", title:"Associe o recurso ao efeito",
+ prompt:"Relacione cada recurso narrativo ou sonoro ao efeito mais provável.",
+ pairs:[
+  ["Pausa prolongada","Criar expectativa e destacar um momento."],
+  ["Metáfora","Construir sentido figurado por associação."],
+  ["Pergunta retórica","Provocar reflexão sem exigir resposta literal."],
+  ["Efeito sonoro inesperado","Marcar uma transição ou intensificar uma cena."]
+ ],
+ explanation:"Os recursos de linguagem e de áudio devem ser escolhidos conforme a intenção e o efeito desejado.",
+ hint:"Pense no que cada recurso faz o ouvinte imaginar, sentir ou compreender."
+},
+{
+ type:"mc", topic:"Planejamento", title:"O tema amplo demais",
+ prompt:"A equipe escolheu “internet” como tema, mas o episódio terá apenas cinco minutos. Qual decisão melhora o planejamento?",
+ options:[
+  "Tentar abordar todos os assuntos relacionados à internet.",
+  "Definir um recorte específico, um público e uma pergunta central.",
+  "Falar sem roteiro para ganhar tempo.",
+  "Eliminar a pesquisa para caber no limite."
+ ],
+ correct:1,
+ explanation:"Um recorte delimitado torna a pesquisa viável, organiza a estrutura e permite aprofundar uma questão dentro do tempo disponível.",
+ hint:"Um episódio curto precisa responder a uma pergunta específica, não a todas as perguntas possíveis."
+},
+{
+ type:"riddle", topic:"Enigma de edição", title:"O corte invisível",
+ prompt:"Na edição de áudio, ajudo a separar blocos, marcar mudanças de assunto e orientar o ouvinte. Posso ser uma frase, uma pausa ou uma transição sonora. O que sou?",
+ answers:["transição","transição sonora","transição narrativa","vinheta de transição","ponte sonora"],
+ explanation:"Transições conectam partes do episódio e ajudam o público a acompanhar a organização do conteúdo.",
+ hint:"Meu trabalho é ligar uma parte à próxima sem deixar a mudança brusca."
+},
+{
+ type:"mc", topic:"Narrativa de horror", title:"O final que fica na cabeça",
+ prompt:"Qual final tende a manter o efeito de horror sem precisar explicar tudo?",
+ options:[
+  "O narrador lista todos os detalhes e elimina qualquer dúvida.",
+  "O perigo desaparece sem relação com os acontecimentos anteriores.",
+  "Uma pista final retoma um elemento anterior e sugere que a ameaça continua.",
+  "A história termina antes de apresentar qualquer conflito."
+ ],
+ correct:2,
+ explanation:"Um final sugestivo retoma pistas e permite que o leitor imagine consequências, mantendo a tensão após a leitura.",
+ hint:"O final mais forte pode deixar uma dúvida coerente com as pistas anteriores."
+},
+{
+ type:"order", topic:"Roteiro de entrevista", title:"Perguntar com estratégia",
+ prompt:"Organizem as etapas para preparar uma entrevista respeitosa e produtiva.",
+ items:[
+  "Agradecer, encerrar e confirmar como a fala será utilizada.",
+  "Pesquisar o tema e conhecer o entrevistado.",
+  "Apresentar o objetivo e pedir consentimento.",
+  "Fazer perguntas claras, escutar e solicitar esclarecimentos."
+ ],
+ correct:[1,2,3,0],
+ explanation:"Preparação, apresentação transparente, escuta ativa e encerramento responsável formam uma sequência funcional.",
+ hint:"Antes de perguntar, pesquise e explique a finalidade da entrevista."
+},
+{
+ type:"mc", topic:"Coesão e coerência", title:"A frase que conecta",
+ prompt:"Qual expressão ajuda a introduzir uma oposição entre duas ideias?",
+ options:["Além disso","Por exemplo","Entretanto","Em primeiro lugar"],
+ correct:2,
+ explanation:"“Entretanto” é uma conjunção/conector adversativo que introduz contraste ou oposição.",
+ hint:"Escolha um conector com sentido semelhante a “porém”."
+},
+{
+ type:"riddle", topic:"Enigma de oralidade", title:"A voz também escreve",
+ prompt:"Sou planejado no papel, mas preciso soar natural quando falado. Organizo as falas, os blocos, as pausas e as entradas de áudio de um episódio. Quem sou eu?",
+ answers:["roteiro","roteiro de podcast","script","script de podcast"],
+ explanation:"O roteiro orienta a produção oral e técnica, organizando conteúdo, falas, transições e indicações de áudio.",
+ hint:"É o documento que a equipe consulta antes e durante a gravação."
+},
+{
+ type:"mc", topic:"Desinformação", title:"O título sensacionalista",
+ prompt:"Uma notícia tem o título “Você não vai acreditar no que aconteceu!”, mas o conteúdo apresenta um fato comum sem evidências extraordinárias. Como analisar o título?",
+ options:[
+  "Como garantia de que o conteúdo é confiável.",
+  "Como recurso que pode buscar cliques e exagerar a relevância; é necessário comparar título e conteúdo.",
+  "Como prova de que o autor é especialista.",
+  "Como substituto da leitura completa."
+ ],
+ correct:1,
+ explanation:"Títulos sensacionalistas podem explorar curiosidade e emoção. A análise crítica compara a promessa do título com o conteúdo real.",
+ hint:"Pergunte se o texto entrega o que o título promete ou apenas tenta atrair cliques."
+},
+{
+ type:"pairs", topic:"Ética de produção", title:"Decisões responsáveis",
+ prompt:"Associe cada situação à conduta mais adequada.",
+ pairs:[
+  ["Música protegida","Verificar licença ou utilizar faixa autorizada."],
+  ["Entrevista identificável","Solicitar consentimento e explicar o uso."],
+  ["Dado estatístico","Registrar a fonte e o contexto."],
+  ["Relato pessoal sensível","Preservar a privacidade e respeitar acordos."]
+ ],
+ explanation:"Uma produção responsável considera direitos autorais, consentimento, transparência e proteção de dados pessoais.",
+ hint:"Todas as decisões devem proteger pessoas e permitir que o público verifique informações."
+},
+{
+ type:"mc", topic:"Planejamento de tempo", title:"Cinco minutos de áudio",
+ prompt:"O grupo tem cinco minutos para o episódio. Qual planejamento demonstra melhor noção de tempo?",
+ options:[
+  "Escrever um texto muito longo e acelerar a fala no final.",
+  "Distribuir o tempo entre abertura, desenvolvimento e encerramento, reservando espaço para pausas e transições.",
+  "Gravar sem ensaio e cortar qualquer parte que ultrapasse o tempo.",
+  "Usar o mesmo tempo para cada frase, independentemente da importância."
+ ],
+ correct:1,
+ explanation:"Um roteiro com blocos e tempo estimado facilita o controle de duração e preserva a clareza da fala.",
+ hint:"Planeje o tempo de cada bloco antes de gravar e considere pausas e transições."
+},
+{
+ type:"riddle", topic:"Enigma de revisão", title:"A última escuta",
+ prompt:"Depois da gravação, verifico se as falas estão claras, se há ruídos, se os dados estão corretos e se o episódio respeita o roteiro. Que etapa sou eu?",
+ answers:["revisão","revisão final","revisão de áudio","revisão e edição","edição"],
+ explanation:"A revisão final avalia conteúdo e qualidade técnica antes da publicação ou entrega.",
+ hint:"Aconteço depois da gravação e antes da entrega."
+},
+{
+ type:"mc", topic:"Síntese crítica", title:"O episódio precisa deixar algo",
+ prompt:"Ao terminar um podcast educativo, qual resultado demonstra que o objetivo comunicativo foi alcançado?",
+ options:[
+  "A equipe utilizou palavras difíceis, independentemente da compreensão.",
+  "O episódio ficou longo, mesmo sem desenvolver o tema.",
+  "O público consegue identificar a ideia central, compreender as evidências e refletir sobre o assunto.",
+  "O áudio tem muitos efeitos, mesmo que as informações estejam incorretas."
+ ],
+ correct:2,
+ explanation:"A qualidade comunicativa depende da clareza, da relevância, da adequação ao público e da consistência do conteúdo.",
+ hint:"Avalie o que o público consegue compreender e levar do episódio."
+},
+{
+ type:"order", topic:"Sequência de produção", title:"Da pesquisa à publicação",
+ prompt:"Organizem o fluxo de produção de um podcast, do planejamento à entrega.",
+ items:[
+  "Gravar, editar e revisar o áudio.",
+  "Definir tema, público e objetivo.",
+  "Publicar ou entregar com créditos e referências.",
+  "Pesquisar fontes e escrever o roteiro."
+ ],
+ correct:[1,3,0,2],
+ explanation:"Planejamento, pesquisa e roteiro antecedem a gravação; revisão e créditos devem ser conferidos antes da entrega.",
+ hint:"Não se grava com responsabilidade antes de definir o objetivo e preparar o conteúdo."
+},
+{
+ type:"mc", topic:"Desafio final de leitura", title:"A decisão editorial",
+ prompt:"A equipe descobre que um dado importante do roteiro está incorreto pouco antes da gravação final. O que deve fazer?",
+ options:[
+  "Manter o dado porque o roteiro já está pronto.",
+  "Retirar a fonte e apresentar o dado como opinião.",
+  "Verificar a informação, corrigir o roteiro e revisar as partes afetadas.",
+  "Deixar que o público descubra o erro depois."
+ ],
+ correct:2,
+ explanation:"A responsabilidade editorial exige corrigir informações, conferir a fonte e revisar o conteúdo antes da divulgação.",
+ hint:"A entrega no prazo importa, mas não justifica divulgar uma informação que a equipe sabe estar errada."
+},
+{
+ type:"riddle", topic:"Código de saída", title:"A palavra que abre o estúdio",
+ prompt:"Último enigma: sou a capacidade de compreender, analisar e produzir textos em diferentes contextos sociais, usando leitura, escrita, oralidade e reflexão crítica. Qual conceito resume essa prática?",
+ answers:["letramento","letramento crítico","práticas de letramento"],
+ explanation:"O letramento envolve práticas sociais de leitura e escrita; a dimensão crítica inclui avaliar informações, contextos, vozes e efeitos de sentido.",
+ hint:"O conceito relaciona a linguagem às práticas sociais, e não apenas à decodificação de palavras."
+}
+];
+
+let state = {
+ started:false,
+ finished:false,
+ current:0,
+ score:0,
+ mistakes:0,
+ hints:0,
+ completed:[],
+ remaining:TOTAL_TIME,
+ notes:"",
+ answers:{},
+ startedAt:null,
+ teamName:"",
+ className:"",
+ members:"",
+ difficulty:"standard",
+ timeExpired:false
+};
+let timerInterval = null;
+let orderState = [];
+let pairState = { selected:null, matches:{} };
+let toastTimeout = null;
+
+const $ = id => document.getElementById(id);
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+}[char]));
+
+function showToast(message) {
+  const toast = $("toast");
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.add("hidden"), 2800);
+}
+function normalize(text) {
+  return String(text ?? "").toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ").trim();
+}
+function shuffle(array) {
+  const copy = array.slice();
+  for (let i=copy.length-1; i>0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+function showScreen(screen) {
+  ["welcomeScreen","gameScreen","finishScreen"].forEach(id => $(id).classList.add("hidden"));
+  $(screen).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function saveProgress(silent=true) {
+  collectCurrentAnswer();
+  state.notes = $("teamNotes").value;
+  state.teamName = $("teamName").value.trim() || state.teamName;
+  state.className = $("className").value.trim() || state.className;
+  state.members = $("members").value || state.members;
+  state.difficulty = $("difficulty").value || state.difficulty;
+  const script = collectScript();
+  const payload = {state, script};
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    if (!silent) showToast("Progresso salvo neste dispositivo.");
+    updateSavedStatus();
+    return true;
+  } catch (error) {
+    if (!silent) showToast("Não foi possível salvar. Verifique o armazenamento do navegador.");
+    return false;
+  }
+}
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(error) {
+    return null;
+  }
+}
+function updateSavedStatus() {
+  const saved = loadSaved();
+  if (saved && saved.state) {
+    $("savedStatus").textContent = "Há dados salvos neste dispositivo. Você pode continuar a missão ou iniciar uma nova.";
+    $("resumeBtn").classList.remove("hidden");
+  } else {
+    $("savedStatus").textContent = "O progresso pode ser salvo neste navegador. Para evitar perdas, não limpe os dados do site.";
+    $("resumeBtn").classList.add("hidden");
+  }
+}
+function applySaved(saved) {
+  if (!saved || !saved.state) return false;
+  state = Object.assign(state, saved.state);
+  $("teamName").value = state.teamName || "";
+  $("className").value = state.className || "";
+  $("members").value = state.members || "";
+  $("difficulty").value = state.difficulty || "standard";
+  $("teamNotes").value = state.notes || "";
+  restoreScript(saved.script || {});
+  if (state.finished) {
+    populateFinalReport();
+    showScreen("finishScreen");
+  } else if (state.started) {
+    showScreen("gameScreen");
+    renderChallenge();
+    updateStats();
+    startTimer();
+  } else {
+    showScreen("welcomeScreen");
+  }
+  return true;
+}
+function startGame(resume=false) {
+  if (resume) {
+    const saved = loadSaved();
+    if (saved) {
+      applySaved(saved);
+      return;
+    }
+  }
+  const teamName = $("teamName").value.trim();
+  if (!teamName) {
+    $("teamName").focus();
+    showToast("Digite o nome da equipe para começar.");
+    return;
+  }
+  state = {
+    started:true, finished:false, current:0, score:0, mistakes:0, hints:0,
+    completed:[], remaining:TOTAL_TIME, notes:"", answers:{}, startedAt:Date.now(),
+    teamName, className:$("className").value.trim(),
+    members:$("members").value, difficulty:$("difficulty").value,
+    timeExpired:false
+  };
+  $("teamHeading").textContent = state.teamName;
+  $("teamNotes").value = "";
+  showScreen("gameScreen");
+  renderChallenge();
+  updateStats();
+  startTimer();
+  saveProgress(true);
+}
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimer();
+  timerInterval = setInterval(() => {
+    if (!state.started || state.finished) return;
+    if (state.remaining > 0) state.remaining--;
+    if (state.remaining <= 0 && !state.timeExpired) {
+      state.remaining = 0;
+      state.timeExpired = true;
+      showToast("⏰ Tempo encerrado! Finalizem o que conseguirem e montem o roteiro.");
+      $("timer").classList.add("urgent");
+      saveProgress(true);
+    }
+    updateTimer();
+    if (state.remaining % 10 === 0) saveProgress(true);
+  }, 1000);
+}
+function updateTimer() {
+  const min = Math.floor(state.remaining/60).toString().padStart(2,"0");
+  const sec = (state.remaining%60).toString().padStart(2,"0");
+  $("timer").textContent = `${min}:${sec}`;
+  $("timer").classList.toggle("urgent", state.remaining <= 300);
+}
+function updateStats() {
+  $("score").textContent = state.score;
+  $("progressText").textContent = `${state.completed.length}/${challenges.length}`;
+  $("mistakes").textContent = state.mistakes;
+  $("progressFill").style.width = `${state.completed.length/challenges.length*100}%`;
+  $("teamHeading").textContent = state.teamName || "Equipe";
+  updateTimer();
+}
+function renderChallenge() {
+  if (state.current >= challenges.length) {
+    finishGame();
+    return;
+  }
+  const c = challenges[state.current];
+  $("stageNumber").textContent = `Desafio ${state.current+1} de ${challenges.length}`;
+  $("challengeTitle").textContent = c.title;
+  $("challengePrompt").textContent = c.prompt;
+  $("challengeType").textContent = ({
+    mc:"Múltipla escolha", riddle:"Enigma", order:"Ordenação", pairs:"Associação"
+  })[c.type];
+  $("currentTopic").textContent = c.topic;
+  const context = $("challengeContext");
+  if (c.context) {
+    context.textContent = c.context;
+    context.classList.remove("hidden");
+  } else {
+    context.textContent = "";
+    context.classList.add("hidden");
+  }
+  $("interactionArea").innerHTML = "";
+  $("feedback").className = "hidden";
+  $("feedback").textContent = "";
+  $("checkBtn").classList.remove("hidden");
+  $("checkBtn").disabled = false;
+  $("hintBtn").classList.remove("hidden");
+  $("hintBtn").disabled = false;
+  $("nextBtn").classList.add("hidden");
+  orderState = [];
+  pairState = {selected:null,matches:{}};
+
+  if (c.type === "mc") drawMC(c);
+  if (c.type === "riddle") drawRiddle(c);
+  if (c.type === "order") drawOrder(c);
+  if (c.type === "pairs") drawPairs(c);
+
+  restoreChallengeAnswer();
+  updateStats();
+}
+function drawMC(c) {
+  const area = $("interactionArea");
+  const options = shuffle(c.options.map((text,index)=>({text,index})));
+  area.innerHTML = `<div class="options">${options.map(option => `
+    <label class="option">
+      <input type="radio" name="mcAnswer" value="${option.index}">
+      <span>${escapeHTML(option.text)}</span>
+    </label>`).join("")}</div>`;
+}
+function drawRiddle(c) {
+  $("interactionArea").innerHTML = `
+    <div class="field">
+      <label for="riddleAnswer">Digite sua resposta</label>
+      <input id="riddleAnswer" autocomplete="off" placeholder="A resposta pode ser uma palavra ou expressão">
+      <small>Conversem antes de responder. A grafia e os acentos não serão o foco da correção.</small>
+    </div>`;
+}
+function drawOrder(c) {
+  orderState = shuffle(c.items.map((text,index)=>({text,original:index})));
+  $("interactionArea").innerHTML = `
+    <p class="muted">Use ↑ e ↓ para mudar a ordem. A primeira posição fica no topo.</p>
+    <div id="orderList" class="order-list"></div>`;
+  renderOrderList();
+}
+function renderOrderList() {
+  const list = $("orderList");
+  if (!list) return;
+  list.innerHTML = orderState.map((item,index)=>`
+    <div class="order-item">
+      <strong>${index+1}.</strong>
+      <span class="order-text">${escapeHTML(item.text)}</span>
+      <button class="secondary small" data-move-up="${index}" aria-label="Mover para cima" ${index===0?"disabled":""}>↑</button>
+      <button class="secondary small" data-move-down="${index}" aria-label="Mover para baixo" ${index===orderState.length-1?"disabled":""}>↓</button>
+    </div>`).join("");
+  list.querySelectorAll("[data-move-up]").forEach(button => button.addEventListener("click",()=>{
+    const i=Number(button.dataset.moveUp);
+    if (i>0) {
+      [orderState[i-1],orderState[i]]=[orderState[i],orderState[i-1]];
+      renderOrderList();
+    }
+  }));
+  list.querySelectorAll("[data-move-down]").forEach(button => button.addEventListener("click",()=>{
+    const i=Number(button.dataset.moveDown);
+    if (i<orderState.length-1) {
+      [orderState[i+1],orderState[i]]=[orderState[i],orderState[i+1]];
+      renderOrderList();
+    }
+  }));
+}
+function drawPairs(c) {
+  const defs = shuffle(c.pairs.map((pair,index)=>({text:pair[1],original:index})));
+  pairState = {selected:null,matches:{}, definitions:defs};
+  $("interactionArea").innerHTML = `
+    <p class="muted">Selecione um item da coluna esquerda e depois sua correspondência na direita. Para trocar uma associação, selecione novamente o item.</p>
+    <div class="match-grid">
+      <div><h3>Conceitos</h3><div class="match-column" id="matchTerms"></div></div>
+      <div><h3>Definições</h3><div class="match-column" id="matchDefs"></div></div>
+    </div>
+    <p id="matchStatus" class="muted" aria-live="polite">Nenhuma associação feita.</p>`;
+  renderPairs(c);
+}
+function renderPairs(c) {
+  const terms = $("matchTerms");
+  const defs = $("matchDefs");
+  if (!terms || !defs) return;
+  terms.innerHTML = c.pairs.map((pair,index)=>`
+    <button type="button" class="match-choice ${pairState.selected===index?"selected":""} ${pairState.matches[index]!==undefined?"matched":""}" data-term="${index}">
+      ${escapeHTML(pair[0])}${pairState.matches[index]!==undefined?" ✓":""}
+    </button>`).join("");
+  defs.innerHTML = pairState.definitions.map((definition,index)=>`
+    <button type="button" class="match-choice ${Object.values(pairState.matches).includes(definition.original)?"matched":""}" data-def="${definition.original}">
+      ${escapeHTML(definition.text)}${Object.values(pairState.matches).includes(definition.original)?" ✓":""}
+    </button>`).join("");
+  terms.querySelectorAll("[data-term]").forEach(button=>button.addEventListener("click",()=>{
+    const i=Number(button.dataset.term);
+    if (pairState.matches[i]!==undefined) {
+      delete pairState.matches[i];
+      pairState.selected=i;
+    } else {
+      pairState.selected=i;
+    }
+    renderPairs(c);
+    updatePairStatus(c);
+  }));
+  defs.querySelectorAll("[data-def]").forEach(button=>button.addEventListener("click",()=>{
+    if (pairState.selected===null) {
+      showToast("Selecione primeiro um conceito na coluna esquerda.");
+      return;
+    }
+    const def=Number(button.dataset.def);
+    for (const key of Object.keys(pairState.matches)) {
+      if (pairState.matches[key]===def) delete pairState.matches[key];
+    }
+    pairState.matches[pairState.selected]=def;
+    pairState.selected=null;
+    renderPairs(c);
+    updatePairStatus(c);
+  }));
+  updatePairStatus(c);
+}
+function updatePairStatus(c) {
+  const status=$("matchStatus");
+  if (!status) return;
+  status.textContent=`Associações realizadas: ${Object.keys(pairState.matches).length}/${c.pairs.length}.`;
+}
+function collectCurrentAnswer() {
+  if (!state.started || state.finished) return;
+  const c=challenges[state.current];
+  if (!c) return;
+  let answer=null;
+  if (c.type==="mc") {
+    const selected=document.querySelector('input[name="mcAnswer"]:checked');
+    answer=selected ? Number(selected.value) : null;
+  } else if (c.type==="riddle") {
+    answer=$("riddleAnswer") ? $("riddleAnswer").value : null;
+  } else if (c.type==="order") {
+    answer=orderState.map(item=>item.original);
+  } else if (c.type==="pairs") {
+    answer=Object.assign({},pairState.matches);
+  }
+  state.answers[state.current]=answer;
+}
+function restoreChallengeAnswer() {
+  const answer=state.answers[state.current];
+  if (answer===undefined || answer===null) return;
+  const c=challenges[state.current];
+  if (c.type==="mc") {
+    const radio=document.querySelector(`input[name="mcAnswer"][value="${Number(answer)}"]`);
+    if (radio) radio.checked=true;
+  } else if (c.type==="riddle" && $("riddleAnswer")) {
+    $("riddleAnswer").value=String(answer);
+  } else if (c.type==="order" && Array.isArray(answer)) {
+    const byOriginal=new Map(orderState.map(item=>[item.original,item]));
+    orderState=answer.map(index=>byOriginal.get(index)).filter(Boolean);
+    c.items.forEach((text,index)=>{if(!orderState.some(item=>item.original===index))orderState.push({text,original:index});});
+    renderOrderList();
+  } else if (c.type==="pairs" && typeof answer==="object") {
+    pairState.matches=Object.assign({},answer);
+    renderPairs(c);
+  }
+}
+function lockInteraction() {
+  $("interactionArea").querySelectorAll("input,select,textarea,button").forEach(el=>el.disabled=true);
+  $("checkBtn").disabled=true;
+  $("hintBtn").disabled=true;
+  $("checkBtn").classList.add("hidden");
+  $("hintBtn").classList.add("hidden");
+  $("nextBtn").classList.remove("hidden");
+}
+function setFeedback(message,kind) {
+  const feedback=$("feedback");
+  feedback.textContent=message;
+  feedback.className=`feedback ${kind}`;
+}
+function checkAnswer() {
+  if (!state.started || state.finished || state.completed.includes(state.current)) return;
+  const c=challenges[state.current];
+  let correct=false;
+  let answer=null;
+
+  if (c.type==="mc") {
+    const selected=document.querySelector('input[name="mcAnswer"]:checked');
+    if (!selected) { showToast("Selecione uma alternativa antes de conferir."); return; }
+    answer=Number(selected.value);
+    correct=answer===c.correct;
+  } else if (c.type==="riddle") {
+    const input=$("riddleAnswer");
+    answer=input.value.trim();
+    if (!answer) { showToast("Digite uma resposta antes de conferir."); return; }
+    const normalized=normalize(answer);
+    correct=c.answers.some(candidate=>{
+      const expected=normalize(candidate);
+      return normalized===expected || (normalized.length>4 && expected.length>4 &&
+        (normalized.includes(expected) || expected.includes(normalized)));
+    });
+  } else if (c.type==="order") {
+    answer=orderState.map(item=>item.original);
+    correct=answer.every((original,index)=>original===c.correct[index]);
+  } else if (c.type==="pairs") {
+    answer=Object.assign({},pairState.matches);
+    correct=Object.keys(answer).length===c.pairs.length &&
+      c.pairs.every((pair,index)=>Number(answer[index])===index);
+  }
+
+  state.answers[state.current]=answer;
+  if (correct) {
+    state.score+=10;
+    state.completed.push(state.current);
+    setFeedback(`Resposta correta! +10 pontos. ${c.explanation}`, "good");
+    lockInteraction();
+    saveProgress(true);
+    updateStats();
+  } else {
+    state.mistakes++;
+    state.score=Math.max(0,state.score-2);
+    setFeedback(`Ainda não! A equipe perdeu 2 pontos nesta tentativa. Releiam a situação, discutam e tentem novamente. ${c.type==="pairs"?"Confiram cada associação.":""}`, "bad");
+    updateStats();
+    saveProgress(true);
+  }
+}
+function giveHint() {
+  if (!state.started || state.finished || state.completed.includes(state.current)) return;
+  const c=challenges[state.current];
+  if (state.difficulty==="challenge") {
+    showToast("Modo avançado: as pistas estão bloqueadas. Conversem e usem as evidências do desafio.");
+    return;
+  }
+  state.hints++;
+  state.score=Math.max(0,state.score-2);
+  setFeedback(`💡 Pista: ${c.hint} (−2 pontos pela pista)`, "info");
+  updateStats();
+  saveProgress(true);
+}
+function nextChallenge() {
+  if (!state.completed.includes(state.current)) {
+    showToast("Concluam o desafio atual antes de avançar.");
+    return;
+  }
+  state.current++;
+  if (state.current>=challenges.length) {
+    finishGame();
+    return;
+  }
+  renderChallenge();
+  saveProgress(true);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function finishGame() {
+  state.finished=true;
+  state.started=false;
+  clearInterval(timerInterval);
+  saveProgress(true);
+  populateFinalReport();
+  showScreen("finishScreen");
+}
+function populateFinalReport() {
+  $("finalScore").textContent=state.score;
+  $("finalCompleted").textContent=`${state.completed.length}/${challenges.length}`;
+  $("finalMistakes").textContent=state.mistakes;
+  const elapsed=Math.max(0,TOTAL_TIME-state.remaining);
+  $("finalTime").textContent=`${Math.floor(elapsed/60).toString().padStart(2,"0")}:${(elapsed%60).toString().padStart(2,"0")}`;
+  const completed=state.completed.length;
+  let message;
+  if (completed===challenges.length) {
+    message="Missão concluída integralmente! A equipe demonstrou persistência, leitura crítica e capacidade de resolver problemas. Agora, revisem o roteiro antes de gravar.";
+  } else if (completed>=20) {
+    message="Excelente avanço! Vocês resolveram boa parte da missão. Usem as aprendizagens conquistadas para construir um roteiro bem organizado.";
+  } else if (completed>=10) {
+    message="A equipe já reuniu conhecimentos importantes. Retomem os desafios pendentes quando possível e transformem as ideias em um roteiro consistente.";
+  } else {
+    message="Toda produção começa com uma primeira etapa. Organizem as ideias, distribuam as funções e avancem no roteiro com atenção à clareza e às fontes.";
+  }
+  if (state.timeExpired) message+=" O tempo de 45 minutos foi encerrado; o roteiro pode ser finalizado e salvo.";
+  $("finalMessage").textContent=message;
+  restoreScript(collectScript());
+}
+function collectScript() {
+  const ids=[
+    "podTitle","podEpisode","podTheme","podAudience","podObjective","podFormat",
+    "podDuration","podOpening","podHook","podContext","podBlock1","podBlock2",
+    "podBlock3","podSources","podQuestions","podRoles","podSound","podTransition",
+    "podClosing","podCall","podCredits","podReview"
+  ];
+  const result={};
+  ids.forEach(id=>{const element=$(id);if(element)result[id]=element.value;});
+  for(let i=1;i<=7;i++) {
+    const checkbox=$(`ck${i}`);
+    if(checkbox)result[`ck${i}`]=checkbox.checked;
+  }
+  return result;
+}
+function restoreScript(script) {
+  if (!script) return;
+  Object.keys(script).forEach(id=>{
+    const element=$(id);
+    if (!element) return;
+    if (element.type==="checkbox") element.checked=Boolean(script[id]);
+    else element.value=script[id] ?? "";
+  });
+}
+function buildScriptText() {
+  const script=collectScript();
+  const fields=[
+    ["Título do podcast","podTitle"],
+    ["Nome do episódio","podEpisode"],
+    ["Tema central","podTheme"],
+    ["Público-alvo","podAudience"],
+    ["Objetivo comunicativo","podObjective"],
+    ["Formato","podFormat"],
+    ["Duração prevista","podDuration"],
+    ["Abertura e vinheta","podOpening"],
+    ["Pergunta provocadora ou gancho inicial","podHook"],
+    ["Contextualização do tema","podContext"],
+    ["Bloco 1 — ideia principal","podBlock1"],
+    ["Bloco 2 — aprofundamento","podBlock2"],
+    ["Bloco 3 — análise ou desfecho","podBlock3"],
+    ["Fontes e evidências","podSources"],
+    ["Perguntas para entrevista ou debate","podQuestions"],
+    ["Divisão de falas e funções","podRoles"],
+    ["Trilha, efeitos e sonoplastia","podSound"],
+    ["Transições entre blocos","podTransition"],
+    ["Encerramento","podClosing"],
+    ["Convite à participação","podCall"],
+    ["Créditos e referências finais","podCredits"],
+    ["Observações para revisão","podReview"]
+  ];
+  const checklist=[
+    ["Objetivo e público definidos","ck1"],
+    ["Linguagem adequada","ck2"],
+    ["Fontes verificáveis","ck3"],
+    ["Sequência lógica","ck4"],
+    ["Funções distribuídas","ck5"],
+    ["Privacidade e direitos autorais","ck6"],
+    ["Áudio revisado","ck7"]
+  ];
+  let textContent="MISSÃO PODCAST — ROTEIRO DE PRODUÇÃO\n";
+  textContent+="Professora Bárbara · Língua Portuguesa e Comunicação\n\n";
+  textContent+=`Equipe: ${state.teamName||$("teamName").value||"Não informada"}\n`;
+  textContent+=`Turma: ${state.className||$("className").value||"Não informada"}\n`;
+  textContent+=`Integrantes: ${state.members||$("members").value||"Não informados"}\n`;
+  textContent+=`Pontuação da missão: ${state.score}\nDesafios concluídos: ${state.completed.length}/${challenges.length}\n\n`;
+  fields.forEach(([label,id])=>{
+    textContent+=`${label.toUpperCase()}\n${(script[id]||"Não preenchido").trim()}\n\n`;
+  });
+  textContent+="CHECKLIST DE QUALIDADE\n";
+  checklist.forEach(([label,id])=>{textContent+=`${script[id]?"[X]":"[ ]"} ${label}\n`;});
+  textContent+="\nORIENTAÇÕES PARA A GRAVAÇÃO\n";
+  textContent+="1. Revisar o roteiro em voz alta.\n2. Conferir dados e referências.\n3. Gravar em local silencioso.\n4. Revisar volume, ruídos e transições.\n5. Conferir créditos, consentimentos e direitos de uso.\n";
+  return textContent;
+}
+function downloadScript() {
+  saveProgress(true);
+  const blob=new Blob([buildScriptText()],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download=`roteiro-podcast-${(state.teamName||"equipe").replace(/[^a-z0-9-_]/gi,"-").toLowerCase()}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function copyScript() {
+  const text=buildScriptText();
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Roteiro copiado para a área de transferência.");
+  } catch(error) {
+    const temp=document.createElement("textarea");
+    temp.value=text;
+    document.body.appendChild(temp);
+    temp.select();
+    const ok=document.execCommand("copy");
+    temp.remove();
+    showToast(ok?"Roteiro copiado.":"Não foi possível copiar. Use o botão de baixar TXT.");
+  }
+}
+function clearSaved() {
+  if (!confirm("Apagar a missão e o roteiro salvos neste dispositivo? Esta ação não pode ser desfeita.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state={
+    started:false,finished:false,current:0,score:0,mistakes:0,hints:0,
+    completed:[],remaining:TOTAL_TIME,notes:"",answers:{},startedAt:null,
+    teamName:"",className:"",members:"",difficulty:"standard",timeExpired:false
+  };
+  clearInterval(timerInterval);
+  $("teamName").value="";
+  $("className").value="";
+  $("members").value="";
+  $("teamNotes").value="";
+  document.querySelectorAll("#finishScreen input, #finishScreen textarea, #finishScreen select").forEach(el=>{
+    if(el.type==="checkbox")el.checked=false;else el.value="";
+  });
+  updateSavedStatus();
+  showToast("Dados salvos apagados.");
+}
+function restartGame() {
+  if (!confirm("Reiniciar a missão? O progresso e o roteiro atuais serão apagados.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  clearInterval(timerInterval);
+  state={
+    started:false,finished:false,current:0,score:0,mistakes:0,hints:0,
+    completed:[],remaining:TOTAL_TIME,notes:"",answers:{},startedAt:null,
+    teamName:"",className:"",members:"",difficulty:"standard",timeExpired:false
+  };
+  $("teamName").value="";
+  $("className").value="";
+  $("members").value="";
+  $("teamNotes").value="";
+  document.querySelectorAll("#finishScreen input, #finishScreen textarea, #finishScreen select").forEach(el=>{
+    if(el.type==="checkbox")el.checked=false;else el.value="";
+  });
+  updateSavedStatus();
+  showScreen("welcomeScreen");
+}
+function returnToGame() {
+  if (!state.started && !state.finished) {
+    showToast("Não há missão em andamento.");
+    return;
+  }
+  if (state.current>=challenges.length) state.current=challenges.length-1;
+  state.finished=false;
+  state.started=true;
+  showScreen("gameScreen");
+  renderChallenge();
+  updateStats();
+  startTimer();
+}
+$("startBtn").addEventListener("click",()=>startGame(false));
+$("resumeBtn").addEventListener("click",()=>startGame(true));
+$("clearBtn").addEventListener("click",clearSaved);
+$("saveBtn").addEventListener("click",()=>saveProgress(false));
+$("checkBtn").addEventListener("click",checkAnswer);
+$("hintBtn").addEventListener("click",giveHint);
+$("nextBtn").addEventListener("click",nextChallenge);
+$("saveScriptBtn").addEventListener("click",()=>{saveProgress(false);showToast("Roteiro salvo neste dispositivo.");});
+$("downloadBtn").addEventListener("click",downloadScript);
+$("pdfBtn").addEventListener("click",()=>{saveProgress(true);window.print();});
+$("copyBtn").addEventListener("click",copyScript);
+$("restartBtn").addEventListener("click",restartGame);
+$("backToGameBtn").addEventListener("click",returnToGame);
+$("teamNotes").addEventListener("input",()=>{state.notes=$("teamNotes").value;});
+$("welcomeScreen").querySelectorAll("input,textarea,select").forEach(el=>el.addEventListener("input",()=>{
+  state.teamName=$("teamName").value.trim();
+  state.className=$("className").value.trim();
+  state.members=$("members").value;
+  state.difficulty=$("difficulty").value;
+}));
+document.querySelectorAll("#finishScreen input, #finishScreen textarea, #finishScreen select").forEach(el=>{
+  el.addEventListener("input",()=>saveProgress(true));
+  el.addEventListener("change",()=>saveProgress(true));
+});
+window.addEventListener("beforeunload",()=>{if(state.started||state.finished)saveProgress(true);});
+
+const savedAtLoad=loadSaved();
+if(savedAtLoad && savedAtLoad.state) {
+  $("savedStatus").textContent="Há uma missão salva neste dispositivo. Use “Continuar missão salva” para recuperar o progresso e o roteiro.";
+  $("resumeBtn").classList.remove("hidden");
+} else {
+  updateSavedStatus();
+}
+</script>
+</body>
+</html>
